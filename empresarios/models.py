@@ -57,6 +57,16 @@ class Empresas(models.Model):
     def valuation(self):
         return f"{100 * self.valor / self.percentual_equity:.2f}"
 
+    @property
+    def percentual_captado(self):
+        propostas = self.propostas.all()
+        percentual_vendido = 0
+        for pi in propostas:
+            print(pi.percentual)
+            if pi.status == "PA":
+                percentual_vendido += pi.percentual
+        return int(percentual_vendido)
+
 
 class Documento(models.Model):
     empresa = models.ForeignKey(Empresas, on_delete=models.DO_NOTHING)
