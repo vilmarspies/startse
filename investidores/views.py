@@ -8,6 +8,8 @@ from .models import PropostaInvestimento
 
 # Create your views here.
 def sugestao(request):
+    if not request.user.is_authenticated:
+        return redirect("/usuarios/logar")
     areas = Empresas.area_choices
     if request.method == "GET":
         return render(request, "sugestao.html", {"areas": areas})
@@ -46,6 +48,8 @@ def sugestao(request):
 
 
 def ver_empresa(request, id):
+    if not request.user.is_authenticated:
+        return redirect("/usuarios/logar")
     empresa = Empresas.objects.get(id=id)
     documentos = Documento.objects.filter(empresa=empresa)
     metricas = Metricas.objects.filter(empresa=empresa)
@@ -58,7 +62,7 @@ def ver_empresa(request, id):
     concretizado = False
     if percentual_vendido >= limiar:
         concretizado = True
-    
+
     percentual_disponivel = empresa.percentual_equity - percentual_vendido
 
     return render(
@@ -70,12 +74,14 @@ def ver_empresa(request, id):
             "metricas": metricas,
             "percentual_vendido": int(percentual_vendido),
             "concretizado": concretizado,
-            'percentual_disponivel':percentual_disponivel
+            "percentual_disponivel": percentual_disponivel,
         },
     )
 
 
 def realizar_proposta(request, id):
+    if not request.user.is_authenticated:
+        return redirect("/usuarios/logar")
     valor = request.POST.get("valor")
     percentual = request.POST.get("percentual")
     empresa = Empresas.objects.get(id=id)
@@ -120,6 +126,8 @@ def realizar_proposta(request, id):
 
 
 def assinar_contrato(request, id):
+    if not request.user.is_authenticated:
+        return redirect("/usuarios/logar")
     pi = PropostaInvestimento.objects.get(id=id)
     if pi.status != "AS":
         raise Http404()
